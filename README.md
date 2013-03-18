@@ -37,9 +37,9 @@ Or, you can provide a different value and optionally, additional context:
 Heartbeats
 ----------
 
-You can also start a heartbeat, which could be useful for monitoring background workers. This will report to the "background_worker" time series every 30 seconds:
+You can also start a heartbeat, which could be useful for monitoring background workers. This will start a thread which reports to the "background_worker" time series every 30 seconds:
 
-	errplane.heartbeat("background_worker", 30)
+    errplane.heartbeat("background_worker", 30)
 
 Contributing
 ------------
