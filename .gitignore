@@ -1,0 +1,4 @@
+*.pyc
+dist
+errplane.egg-info
+build
