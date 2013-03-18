@@ -21,25 +21,25 @@ Then, import it into your app:
 
 And instantiate it with your API Key and the target Application ID:
 
-	errplane = Errplane
+	errplane = Errplane("YOUR_API_KEY", "APPLICATION_ID")
 
 Sending Custom Metrics
 ------------------------
 
-Start by adding the gem to your Gemfile:
+You can easily send a custom metric (with a default value of 1):
 
-    gem "errplane"
+    errplane.report("metric_name")
 
-Then, issue the following commands in your application's root directory:
+Or, you can provide a different value and optionally, additional context:
 
-    bundle
-    script/generate errplane --api-key your-api-key-goes-here
+    errplane.report("file_uploaded", value=file.bytes, context=file.name)
 
-This will create `config/initializers/errplane.rb` for you automatically. If you want to make sure that everything's working correctly, just run:
+Heartbeats
+----------
 
-    bundle exec rake errplane:test
+You can also start a heartbeat, which could be useful for monitoring background workers. This will report to the "background_worker" time series every 30 seconds:
 
-You should be able to view the exception at [http://errplane.com](http://errplane.com) and also receive an email notification of the test exception.
+	errplane.heartbeat("background_worker", 30)
 
 Contributing
 ------------
