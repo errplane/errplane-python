@@ -3,6 +3,7 @@ import requests
 import json
 import hashlib
 import logging
+import base64
 
 from threading import Thread
 from Queue import Queue
@@ -57,7 +58,7 @@ class WorkerQueue:
               line = point["name"]
               line += " " + str(point["value"])
               line += " " + point["timestamp"]
-              if point["context"]: line += " " + point["context"]
+              if point["context"]: line += " " + base64.b64encode(point["context"])
               lines.append(line)
 
             data = "\n".join(lines)

@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='errplane',
-    version='0.1.3',
+    version='0.1.4',
     author='Todd Persen',
     author_email='todd@errplane.com',
     packages=find_packages(),
