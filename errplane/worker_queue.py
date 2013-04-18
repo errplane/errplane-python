@@ -67,7 +67,7 @@ class WorkerQueue:
             logging.debug("[Errplane] POSTing data:")
             logging.debug(data)
 
-            requests.post(url, data=data)
+            requests.post(url, data=data, headers={'Connection':'close'})
 
             if self._items.qsize() < self.max_post_size:
               break
