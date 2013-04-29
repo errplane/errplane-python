@@ -29,5 +29,5 @@ class Errplane(object):
       time.sleep(interval)
       self.report(name, value=value, context=context)
 
-
-
+  def flush(self):
+    self._queue.flush()

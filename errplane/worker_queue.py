@@ -24,7 +24,8 @@ class WorkerQueue:
     self._threads = []
 
     for n in range(worker_threads):
-      thread = Thread(target=self.process)
+      logging.debug("[Errplane] Spawning worker thread.")
+      thread = Thread(target=self.worker)
       thread.setDaemon(True)
       self._threads.append(thread)
       thread.start()
@@ -41,36 +42,40 @@ class WorkerQueue:
     except:
       return None
 
+  def flush(self):
+    logging.debug("[Errplane] Flushing queue.")
+    self.process()
+
   def process(self):
-    logging.debug("[Errplane] Spawning worker thread.")
-    while True:
+    while self._items.qsize():
       try:
-        time.sleep(self.worker_thread_interval)
+        points = []
+        while self._items.qsize() and len(points) < self.max_post_size:
+          point = self.pop()
+          if point: points.append(point)
 
-        while self._items.qsize():
-            points = []
-            while self._items.qsize() and len(points) < self.max_post_size:
-              point = self.pop()
-              if point: points.append(point)
+        lines = []
+        for point in points:
+          line = point["name"]
+          line += " " + str(point["value"])
+          line += " " + point["timestamp"]
+          if point["context"]: line += " " + base64.b64encode(point["context"])
+          lines.append(line)
 
-            lines = []
-            for point in points:
-              line = point["name"]
-              line += " " + str(point["value"])
-              line += " " + point["timestamp"]
-              if point["context"]: line += " " + base64.b64encode(point["context"])
-              lines.append(line)
+        data = "\n".join(lines)
+        url = "https://apiv2.errplane.com/databases/" + self.application_id + self.environment + "/points?api_key=" + self.api_key
 
-            data = "\n".join(lines)
-            url = "https://apiv2.errplane.com/databases/" + self.application_id + self.environment + "/points?api_key=" + self.api_key
+        logging.debug("[Errplane] POSTing data:")
+        logging.debug(data)
 
-            logging.debug("[Errplane] POSTing data:")
-            logging.debug(data)
+        requests.post(url, data=data, headers={'Connection':'close'})
 
-            requests.post(url, data=data, headers={'Connection':'close'})
-
-            if self._items.qsize() < self.max_post_size:
-              break
-
+        if self._items.qsize() < self.max_post_size:
+          break
       except Exception as e:
-        logging.error("[Errplane] Caught exception in thread: " + e.message)
+        logging.error("[Errplane] Caught exception while processing queue: " + e.message)
+
+  def worker(self):
+    while True:
+      time.sleep(self.worker_thread_interval)
+      self.process()
