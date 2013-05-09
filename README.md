@@ -23,6 +23,10 @@ And instantiate it with your API Key and the target Application ID:
 
 	errplane = Errplane("YOUR_API_KEY", "APPLICATION_ID")
 
+The environment will automatically default to *development*, but you can easily override it at initialization:
+
+    errplane = Errplane("YOUR_API_KEY", "APPLICATION_ID", environment="production")
+
 Sending Custom Metrics
 ------------------------
 
